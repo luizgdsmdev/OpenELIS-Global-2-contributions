@@ -485,8 +485,13 @@ test("US1 — Admin configures barcode label quantities", async ({
   await expect(saveButton).toBeEnabled({ timeout: UI_TIMEOUT });
   await scrollToAndPause(page, saveButton, pause, 800);
   await saveButton.click();
+  // Carbon Toast Notifications render via React portals with role="status".
+  // Using getByRole("status") with text filter is more reliable than getByText
+  // because the notification text is mixed with <br> tags inside the toast container.
   await expect(
-    page.getByText(/bar.?code configurations has been saved/i).first(),
+    page
+      .getByRole("status")
+      .filter({ hasText: /BarCode Configurations has been saved/i }),
   ).toBeVisible({ timeout: UI_TIMEOUT });
 
   await page.reload({ waitUntil: "domcontentloaded" });
